@@ -1,0 +1,16 @@
+# Microsoft Developer Studio Generated Dependency File, included by ImagePrepare.mak
+
+.\ImagePrepare.cpp : \
+	"..\..\bufstruct.h"\
+	"..\..\imageproc.h"\
+	".\ImagePrepare.h"\
+	".\StdAfx.h"\
+	
+
+.\ImagePrepare.rc : \
+	".\res\ImagePrepare.rc2"\
+	
+
+.\StdAfx.cpp : \
+	".\StdAfx.h"\
+	
