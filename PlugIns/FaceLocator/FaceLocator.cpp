@@ -1,8 +1,8 @@
 // FaceLocator.cpp : Defines the initialization routines for the DLL.
 #include "stdafx.h"
-#include "BufStruct.h"
 #include "ImageProc.h"
 #include "FaceLocator.h"
+#include "BufStruct.h"
 
 #ifdef _DEBUG
 #    define new DEBUG_NEW
@@ -294,6 +294,89 @@ DLL_EXP void ON_PLUGINRUN(int w, int h, BYTE* pYBits, BYTE* pUBits, BYTE* pVBits
             }
         }
         myHeapFree(tempImg);
+    }
+
+    // 5. 人脸区域定位及显示
+    {
+        BYTE* pT = pImgProcBuf->TempImage1d8;
+
+        {
+            int f = false;
+            for (int j = 0; j < h / 4; j++) {
+                int i;
+                for (i = 0; i < w / 4; i++) {
+                    if (pT[j * w / 4 + i] == 255) {
+                        pImgProcBuf->rcnFace.top = j;
+                        f                        = true;
+                        break;
+                    }
+                }
+                if (f) {
+                    break;
+                }
+            }
+        }
+
+        {
+            int f = false;
+            for (int j = h / 4 - 1; j >= 0; j--) {
+                int i;
+                for (i = 0; i < w / 4; i++) {
+                    if (pT[j * w / 4 + i] == 255) {
+                        pImgProcBuf->rcnFace.height = j - pImgProcBuf->rcnFace.top;
+                        f                        = true;
+                        break;
+                    }
+                }
+                if (f) {
+                    break;
+                }
+            }
+        }
+
+
+        {
+            int f = false;
+            for (int i = 0; i < w / 4; i++) {
+                for (int j = 0; j < h / 4; j++) {
+                    if (pT[j * w / 4 + i] == 255) {
+                        pImgProcBuf->rcnFace.left = i;
+                        f                         = true;
+                        break;
+                    }
+                }
+                if (f) {
+                    break;
+                }
+            }
+        }
+
+        {
+            int f = false;
+            for (int i = w / 4 - 1; i >= 0; i--) {
+                for (int j = 0; j < h / 4; j++) {
+                    if (pT[j * w / 4 + i] == 255) {
+                        pImgProcBuf->rcnFace.width = i - pImgProcBuf->rcnFace.left;
+                        f                         = true;
+                        break;
+                    }
+                }
+                if (f) {
+                    break;
+                }
+            }
+        }
+
+
+        {
+            pImgProcBuf->rcnFace.top = pImgProcBuf->rcnFace.top * 4;
+            pImgProcBuf->rcnFace.height = pImgProcBuf->rcnFace.height * 4;
+            pImgProcBuf->rcnFace.left = pImgProcBuf->rcnFace.left * 4;
+            pImgProcBuf->rcnFace.width = pImgProcBuf->rcnFace.width * 4;
+            
+            BYTE* pO = pImgProcBuf->colorBmp;
+            DrawRectangle(pYBits, w, h, pImgProcBuf->rcnFace, FOREGROUND_GREEN, false);
+        }
     }
 
     // 6. 替换
